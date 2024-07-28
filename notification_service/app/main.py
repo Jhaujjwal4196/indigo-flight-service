@@ -1,13 +1,18 @@
 from fastapi import FastAPI
-from app.routes import notification
 from app.models.flights import FlightUpdate
-from app.routes import user
-
+from app.routes import user, notification, booking
 import pika
 import json
 import threading
 
+from app.models.userTable import Base
+from app.db.database import engine
+
+
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
+
 
 # docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
 
@@ -35,9 +40,9 @@ def read_root():
 
 
 app.include_router(user.router, prefix="/api")
-
-
 app.include_router(notification.router, prefix="/api")
+app.include_router(booking.router, prefix="/api")
+
 
 if __name__ == "__main__":
     import uvicorn

@@ -21,5 +21,3 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     dob = Column(DateTime, nullable=False)
 
-    def __repr__(self):
-        return f"<User(email={self.email}, first_name={self.first_name})>"
