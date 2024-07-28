@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.user import  UserCreate
+from app.models.userNotificationTable import UserNotificationTable
 from app.models.userTable import User
 from fastapi import  HTTPException
 from passlib.context import CryptContext
@@ -54,3 +55,12 @@ def create_user(user: UserCreate, db: Session) -> User:
 
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+
+def get_user_notifications(id: str, db:Session):
+    curr_user = db.query(User).filter(User.id == id).first()
+
+    if not curr_user:
+        raise HTTPException(status_code=400,detail="No user found for this error")
+    
+    notifications = db.query(UserNotificationTable).filter(UserNotificationTable.user_id == id)
+    return notifications

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.services.user_service import login_user, create_user
+from app.services.user_service import login_user, create_user, get_user_notifications
 from app.db.database import get_db
 from app.models.user import UserCreate, UserResponse
+from app.models.userNotificationSchema import UserNotification
 from app.models.userTable import User
 from typing import List
 
@@ -42,6 +43,16 @@ async def get_users(db:Session = Depends(get_db)):
     try:
         users = db.query(User).all()
         return users
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Something went wrong")
+
+@router.get('/users/notifications', response_model=List[UserNotification])
+async def get_users(id:str, db:Session = Depends(get_db)):
+    try:
+        notifications = get_user_notifications(id, db)
+        return notifications
     except HTTPException as e:
         raise e
     except Exception as e:

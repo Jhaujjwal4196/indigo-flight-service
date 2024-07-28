@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class FlightUpdate(BaseModel):
+    id: Optional[str] = None
     status: Optional[str] = None
     departure_delay: Optional[float] = None
     arrival_delay: Optional[float] = None

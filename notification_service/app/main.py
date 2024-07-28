@@ -1,18 +1,20 @@
 from fastapi import FastAPI
+from sqlalchemy.orm import Session
 from app.models.flights import FlightUpdate
 from app.routes import user, notification, booking
+from app.services.notification_service import notify_user
+
 import pika
 import json
 import threading
 
 from app.models.userTable import Base
-from app.db.database import engine
+from app.db.database import engine, get_db
 
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
-
 
 # docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
 
@@ -23,6 +25,15 @@ def consume_messages():
 
     def callback(ch, method, properties, body):
         flight_update = FlightUpdate(**json.loads(body))
+
+        db: Session = next(get_db())
+        try:
+            notify_user(flight_update, db)
+        except Exception as e:
+            print(f"Error while processing flight update: {e}")
+        # finally:
+        #     db.close()
+
         print(f"Received notification: {flight_update}")
 
     channel.basic_consume(
@@ -30,8 +41,9 @@ def consume_messages():
         on_message_callback=callback,
         auto_ack=True
     )
-    channel.start_consuming()
 
+    print("Started consuming messages...")
+    channel.start_consuming()
 threading.Thread(target=consume_messages, daemon=True).start()
 
 @app.get("/")

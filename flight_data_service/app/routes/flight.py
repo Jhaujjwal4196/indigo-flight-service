@@ -29,7 +29,7 @@ async def create_flight_endpoint(flight_create: FlightCreate, db: Session = Depe
     return flight
 
 @router.put("/flights/{flight_id}", response_model=FlightSchema)
-async def update_flight(flight_id: int, flight_update: FlightUpdate, db: Session = Depends(get_db)):
+async def update_flight(flight_id: str, flight_update: FlightUpdate, db: Session = Depends(get_db)):
     flight = update_flight_status(db, flight_id, flight_update)
     if flight is None:
         raise HTTPException(status_code=404, detail="Flight not found")

@@ -67,6 +67,8 @@ class FlightBase(BaseModel):
     actual_in: Optional[datetime] = None
     foresight_predictions_available: Optional[bool] = None
 
+    
+
 class FlightCreate(FlightBase):
     pass
 
@@ -101,5 +103,6 @@ class FlightUpdate(BaseModel):
 class Flight(FlightBase):
     id: Optional[int] = None
 
+    
     class Config:
         orm_mode = True
