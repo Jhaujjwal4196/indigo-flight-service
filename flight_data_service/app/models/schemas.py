@@ -100,6 +100,13 @@ class FlightUpdate(BaseModel):
 
     # Add other fields as needed for update operations
 
+class FlightSearch(BaseModel):
+    id: Optional[int]=None
+    arrival: Optional[str]=None
+    departure: Optional[str]=None
+    date: Optional[str]=None
+    pnr: Optional[str]=None
+    
 class Flight(FlightBase):
     id: Optional[int] = None
 

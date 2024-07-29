@@ -1,9 +1,11 @@
 from sqlalchemy.orm import Session
 from app.models.flight import Flight as FlightModel
-from app.models.schemas import FlightUpdate
+from app.models.schemas import FlightUpdate, FlightSearch
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import  HTTPException
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from sqlalchemy import and_, cast, String, func
+
 import json
 
 
@@ -26,6 +28,41 @@ def serialize_datetimes(data):
 
 def get_flight(db: Session, flight_id: int):
     return db.query(FlightModel).filter(FlightModel.id == flight_id).first()
+
+
+def filter_flights(filter_data: FlightSearch, db: Session):
+    query = db.query(FlightModel)
+
+    if filter_data.id:
+        query = query.filter(FlightModel.id == filter_data.id)
+        return query.all()
+
+    if filter_data.pnr:
+        query = query.filter(FlightModel.pnr == filter_data.pnr)
+        return query.all()
+
+    if filter_data.date:
+        filter_date = datetime.strptime(filter_data.date, "%Y-%m-%d")
+        next_day = filter_date + timedelta(days=1)
+    else:
+        filter_date = None
+        next_day = None
+
+    # Filter by arrival, departure, and date combined
+    print("\n\n", filter_date, next_day, FlightModel.origin.contains({"city": filter_data.departure}),FlightModel.destination.contains({"city": filter_data.arrival}),'\n\n')
+    if filter_data.arrival and filter_data.departure and filter_data.date:
+        query = query.filter(
+            and_(
+                func.json_extract(FlightModel.origin, '$.city').ilike(f"%{filter_data.departure}%"),
+                func.json_extract(FlightModel.destination, '$.city').ilike(f"%{filter_data.arrival}%"),
+                FlightModel.scheduled_out >= filter_date,
+                FlightModel.scheduled_out < next_day
+            )
+        )
+        return query.all()
+
+    # If none of the conditions matched, return an empty list
+    return []
 
 
 def update_flight_status(db: Session, flight_id: str, flight_update: FlightUpdate):

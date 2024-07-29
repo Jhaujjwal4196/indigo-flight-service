@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import List
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
 from app.models.flight import Flight as FlightModel
-from app.models.schemas import Flight as FlightSchema, FlightCreate, FlightUpdate
-from app.services.flight_service import get_flight, update_flight_status, create_flight
+from app.models.schemas import Flight as FlightSchema, FlightCreate, FlightUpdate, FlightSearch
+from app.services.flight_service import get_flight, update_flight_status, create_flight, filter_flights
 
 router = APIRouter()
 
@@ -21,6 +22,23 @@ async def read_flight(flight_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Flight not found")
     return flight
 
+@router.get("/flights", response_model=List[FlightSchema])
+async def get_flights(
+    id: str = Query(None),
+    arrival: str = Query(None),
+    departure: str = Query(None),
+    date: str = Query(None),
+    pnr: str = Query(None),
+    db: Session = Depends(get_db)
+):
+    try:
+        filter_data = FlightSearch(id=id, arrival=arrival, departure=departure, date=date, pnr=pnr)
+        flights = filter_flights(filter_data, db)
+        return flights
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
 @router.post("/flights/", response_model=FlightSchema)
 async def create_flight_endpoint(flight_create: FlightCreate, db: Session = Depends(get_db)):
     flight = create_flight(db, flight_create)

@@ -1,0 +1,13 @@
+.main {
+  height: 100vh;
+  background-image: url(https://s6web-prod.goindigo.in/content/dam/s6web/in/en/assets/splash-screen-img.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  background-position: center top;
+  background-attachment: scroll;
+}
+
+.body {
+  padding: 2% 6%;
+}

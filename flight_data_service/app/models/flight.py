@@ -1,21 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import TypeDecorator, TEXT
 
 Base = declarative_base()
-
-class JSONType(TypeDecorator):
-    impl = TEXT
-
-    def process_bind_param(self, value, dialect):
-        if value is None:
-            return None
-        return str(value)  # Serialize complex types to string
-
-    def process_result_value(self, value, dialect):
-        if value is None:
-            return None
-        return eval(value)  # Deserialize strings to complex types
 
 class Flight(Base):
     __tablename__ = 'flights'
@@ -34,14 +20,33 @@ class Flight(Base):
     registration = Column(String, nullable=True)
     atc_ident = Column(String, nullable=True)
     inbound_fa_flight_id = Column(String, nullable=True)
-    codeshares = Column(JSONType, nullable=True)  # Use JSONType for lists
-    codeshares_iata = Column(JSONType, nullable=True)
+    codeshares = Column(String, nullable=True)  # Serialize list as JSON or use another format
+    codeshares_iata = Column(String, nullable=True)  # Serialize list as JSON or use another format
     blocked = Column(Boolean, nullable=True)
     diverted = Column(Boolean, nullable=True)
     cancelled = Column(Boolean, nullable=True)
     position_only = Column(Boolean, nullable=True)
-    origin = Column(JSONType, nullable=True)  # Use JSONType for complex objects
-    destination = Column(JSONType, nullable=True)
+    
+    # Origin fields
+    origin_code = Column(String, nullable=True)
+    origin_code_icao = Column(String, nullable=True)
+    origin_code_iata = Column(String, nullable=True)
+    origin_code_lid = Column(String, nullable=True)
+    origin_timezone = Column(String, nullable=True)
+    origin_name = Column(String, nullable=True)
+    origin_city = Column(String, nullable=True)
+    origin_airport_info_url = Column(String, nullable=True)
+    
+    # Destination fields
+    destination_code = Column(String, nullable=True)
+    destination_code_icao = Column(String, nullable=True)
+    destination_code_iata = Column(String, nullable=True)
+    destination_code_lid = Column(String, nullable=True)
+    destination_timezone = Column(String, nullable=True)
+    destination_name = Column(String, nullable=True)
+    destination_city = Column(String, nullable=True)
+    destination_airport_info_url = Column(String, nullable=True)
+    
     departure_delay = Column(Float, nullable=True)
     arrival_delay = Column(Float, nullable=True)
     filed_ete = Column(Float, nullable=True)
