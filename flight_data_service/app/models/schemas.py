@@ -1,16 +1,9 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-
-class Location(BaseModel):
-    code: Optional[str] = None
-    code_icao: Optional[str] = None
-    code_iata: Optional[str] = None
-    code_lid: Optional[str] = None
-    timezone: Optional[str] = None
-    name: Optional[str] = None
-    city: Optional[str] = None
-    airport_info_url: Optional[str] = None
+from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional, List
 
 class FlightBase(BaseModel):
     ident: Optional[str] = None
@@ -32,8 +25,25 @@ class FlightBase(BaseModel):
     diverted: Optional[bool] = None
     cancelled: Optional[bool] = None
     position_only: Optional[bool] = None
-    origin: Optional[Location] = None
-    destination: Optional[Location] = None
+
+    origin_code: Optional[str] = None
+    origin_code_icao: Optional[str] = None
+    origin_code_iata: Optional[str] = None
+    origin_code_lid: Optional[str] = None
+    origin_timezone: Optional[str] = None
+    origin_name: Optional[str] = None
+    origin_city: Optional[str] = None
+    origin_airport_info_url: Optional[str] = None
+
+    destination_code: Optional[str] = None
+    destination_code_icao: Optional[str] = None
+    destination_code_iata: Optional[str] = None
+    destination_code_lid: Optional[str] = None
+    destination_timezone: Optional[str] = None
+    destination_name: Optional[str] = None
+    destination_city: Optional[str] = None
+    destination_airport_info_url: Optional[str] = None
+
     departure_delay: Optional[float] = None
     arrival_delay: Optional[float] = None
     filed_ete: Optional[float] = None
@@ -66,8 +76,6 @@ class FlightBase(BaseModel):
     estimated_in: Optional[datetime] = None
     actual_in: Optional[datetime] = None
     foresight_predictions_available: Optional[bool] = None
-
-    
 
 class FlightCreate(FlightBase):
     pass
@@ -106,7 +114,7 @@ class FlightSearch(BaseModel):
     departure: Optional[str]=None
     date: Optional[str]=None
     pnr: Optional[str]=None
-    
+
 class Flight(FlightBase):
     id: Optional[int] = None
 

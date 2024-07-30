@@ -5,6 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import  HTTPException
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import and_, cast, String, func
+import time
 
 import json
 
@@ -48,13 +49,11 @@ def filter_flights(filter_data: FlightSearch, db: Session):
         filter_date = None
         next_day = None
 
-    # Filter by arrival, departure, and date combined
-    print("\n\n", filter_date, next_day, FlightModel.origin.contains({"city": filter_data.departure}),FlightModel.destination.contains({"city": filter_data.arrival}),'\n\n')
     if filter_data.arrival and filter_data.departure and filter_data.date:
         query = query.filter(
             and_(
-                func.json_extract(FlightModel.origin, '$.city').ilike(f"%{filter_data.departure}%"),
-                func.json_extract(FlightModel.destination, '$.city').ilike(f"%{filter_data.arrival}%"),
+                FlightModel.origin_city.contains(f"{filter_data.arrival}"),
+                FlightModel.destination_city.contains(f"{filter_data.departure}"),
                 FlightModel.scheduled_out >= filter_date,
                 FlightModel.scheduled_out < next_day
             )
@@ -71,8 +70,8 @@ def update_flight_status(db: Session, flight_id: str, flight_update: FlightUpdat
         raise HTTPException(status_code=404, detail="Flight not found")
 
     fields_to_check = [
-        'status', 'actual_in', 'actual_off', 'scheduled_in', 'scheduled_off', 
-        'scheduled_on', 'scheduled_out', 'actual_on', 'actual_out', 
+        'status', 'actual_in', 'actual_off', 'scheduled_in', 'scheduled_off',
+        'scheduled_on', 'scheduled_out', 'actual_on', 'actual_out',
         'estimated_in', 'estimated_off', 'estimated_on', 'estimated_out', 'departure_delay', 'arrival_delay'
     ]
 
@@ -85,7 +84,7 @@ def update_flight_status(db: Session, flight_id: str, flight_update: FlightUpdat
         if new_value and isinstance(new_value, datetime):
             new_value = new_value.astimezone(timezone.utc).replace(tzinfo=None)
 
-        if new_value and new_value != old_value:
+        if new_value and (new_value != old_value or True):
             setattr(flight, field, new_value)
             fields_to_update[field] = new_value
 
@@ -93,22 +92,36 @@ def update_flight_status(db: Session, flight_id: str, flight_update: FlightUpdat
         db.commit()
         db.refresh(flight)
 
-
-        # Include flight ID in the message body
-        flight_update_dict = flight_update.dict()
-        flight_update_dict['id'] = flight_id
-
-
+        # Include flight ID and flight name in the message body
         serialized_data = serialize_datetimes(fields_to_update)
-        serialized_data['id']=flight_id
+        serialized_data['id'] = flight_id
+        serialized_data['flight_name'] = flight.ident_iata
 
-        print(serialized_data, "serialized")
+        # Retry mechanism for RabbitMQ connection
+        max_retries = 5
+        for attempt in range(max_retries):
+            try:
+                connection_params = pika.ConnectionParameters(
+                    host='localhost',
+                    heartbeat=600,
+                    blocked_connection_timeout=300
+                )
+                connection = pika.BlockingConnection(connection_params)
+                channel = connection.channel()
 
-        channel.basic_publish(
-            exchange='',
-            routing_key='flight_updates',
-            body=json.dumps(serialized_data)
-        )
+                channel.basic_publish(
+                    exchange='',
+                    routing_key='flight_updates',
+                    body=json.dumps(serialized_data)
+                )
+                connection.close()
+                break  # Exit the loop if publish is successful
+            except pika.exceptions.AMQPConnectionError as e:
+                print(f"Connection error: {e}. Retrying {attempt + 1}/{max_retries}")
+                time.sleep(2 ** attempt)  # Exponential backoff
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                break
 
     return flight
 
@@ -128,6 +141,6 @@ def create_flight(db: Session, flight_create: FlightCreate):
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="An error occurred while creating the flight.")
 
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+    # except Exception as e:
+    #     print(f"Unexpected error: {e}")
+    #     raise HTTPException(status_code=500, detail="An unexpected error occurred.")

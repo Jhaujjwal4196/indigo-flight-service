@@ -40,8 +40,10 @@ def notify_user(flight_status: FlightUpdate, db: Session):
                     estimated_in=flight_status.estimated_in,
                     actual_in=flight_status.actual_in,
                     foresight_predictions_available=flight_status.foresight_predictions_available,
+                    flight_name=flight_status.flight_name,
                     created_at=datetime.utcnow()  # Current UTC time
                 )
+                print("/\n\n\n\n", notification_entry, '\n\n\n\n')
                 db.add(notification_entry)
                 
                 # Update user notifications
@@ -49,10 +51,7 @@ def notify_user(flight_status: FlightUpdate, db: Session):
                     curr_user.notifications = []
                 curr_user.notifications.append(flight_status_dict)
 
-                print()
-                print(curr_user.notifications)
-                print()
-                
+             
                 try:
                     db.commit()
                     db.refresh(curr_user)

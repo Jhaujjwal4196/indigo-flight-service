@@ -1,0 +1,117 @@
+/* * {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+} */
+
+.body {
+  margin-bottom: 15px;
+  padding: 15px 20px 10px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 1px 0 2px 0 rgba(201, 201, 201, 0.5);
+}
+/* .body {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  } */
+
+.container {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 10px;
+}
+
+.flightInfo {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  border-radius: 50%;
+  margin: 0px 2px;
+}
+
+.line {
+  flex-grow: 1;
+  height: 2px;
+  border-bottom: 2px dotted;
+  margin: 0 0px;
+  width: 200px;
+}
+
+.scheduled {
+  border-color: green;
+  /* color: green; */
+  /* background-color: green; */
+}
+
+.delayed {
+  border-color: #ec9b0f;
+}
+
+.cancelled {
+  border-color: red;
+}
+
+.scheduled_dot {
+  border-color: #6ab586;
+  /* color:  #6ab586;; */
+  background-color: #6ab586;
+}
+
+.delayed_dot {
+  border-color: #ec9b0f;
+  /* color: #ec9b0f; */
+  background-color: #ec9b0f;
+}
+
+.cancelled_dot {
+  border-color: red;
+  background-color: red;
+}
+
+.scheduled_bg {
+  border-color: green;
+  color: #6ab586; /* background-color: green; */
+}
+.g_bg {
+  color: #fff;
+  background-color: #fff;
+  border-color: #fff;
+}
+
+.delayed_bg {
+  border-color: #ec9b0f;
+  color: #ec9b0f;
+  /* background-color: #ec9b0f; */
+}
+
+.cancelled_bg {
+  border-color: red;
+  color: red;
+  /* background-color: red; */
+}
+
+.city_name {
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.text {
+  font-size: 20px;
+}
+
+.status {
+  font-size: 22px;
+  font-weight: 400;
+}
+.iata {
+  font-size: 26px;
+  font-weight: 300;
+}

@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models.flight import Base  # Adjust the import according to your project structure
+from app.models.flight import Base  
 
-DATABASE_URL = "sqlite:///./test.db"  # Update this to your actual database URL
+DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)

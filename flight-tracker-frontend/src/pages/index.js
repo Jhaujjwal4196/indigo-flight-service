@@ -2,10 +2,17 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import SearchBox from "@/components/SearchBox";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleNotify = (e) => {
+    router.push("/notifications?id=9yi8SV_VoqN7ci8J0CMuF");
+  };
+
   return (
     <>
       <Head>
@@ -16,7 +23,22 @@ export default function Home() {
       </Head>
       <div className={`${styles.main} ${inter.className}`}>
         <div className={styles.body}>
-          <h2>Flight Tracker App</h2>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <h1>Flight Tracker App</h1>
+            <button
+              onClick={handleNotify}
+              style={{ all: "unset", cursor: "pointer" }}
+            >
+              {" "}
+              <u>My Notifications</u>
+            </button>
+          </div>
           <SearchBox />
         </div>
       </div>

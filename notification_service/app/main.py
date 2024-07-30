@@ -4,6 +4,9 @@ from app.models.flights import FlightUpdate
 from app.routes import user, notification, booking
 from app.services.notification_service import notify_user
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 import pika
 import json
 import threading
@@ -25,9 +28,9 @@ def consume_messages():
 
     def callback(ch, method, properties, body):
         flight_update = FlightUpdate(**json.loads(body))
-
         db: Session = next(get_db())
         try:
+            print("\n\nhere/n\n\n\n\n\"")
             notify_user(flight_update, db)
         except Exception as e:
             print(f"Error while processing flight update: {e}")
@@ -45,6 +48,15 @@ def consume_messages():
     print("Started consuming messages...")
     channel.start_consuming()
 threading.Thread(target=consume_messages, daemon=True).start()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def read_root():

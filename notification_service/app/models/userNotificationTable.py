@@ -8,8 +8,11 @@ class UserNotificationTable(Base):
     __tablename__ = 'user_notifications'
     
     user_id = Column(String, nullable=False)  # User receiving the notification
-    id = Column(String, nullable=False)  # This is no longer a primary key
+    id = Column(String, nullable=False)  
     status = Column(String, nullable=True)
+    flight_name = Column(String, nullable=True)
+    buffer_1=Column(String, nullable=True)
+    buffer_2=Column(String, nullable=True)
     departure_delay = Column(Float, nullable=True)
     arrival_delay = Column(Float, nullable=True)
     scheduled_off = Column(DateTime(timezone=True), nullable=True)

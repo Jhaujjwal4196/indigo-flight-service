@@ -22,3 +22,6 @@ class UserNotification(BaseModel):
     actual_in: Optional[datetime] = None
     foresight_predictions_available: Optional[bool] = None
     created_at: Optional[datetime] = None  # Added this line
+    flight_name:Optional[str]=None
+    buffer_1:Optional[str]=None
+    buffer_2:Optional[str]=None

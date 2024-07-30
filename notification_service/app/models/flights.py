@@ -21,3 +21,6 @@ class FlightUpdate(BaseModel):
     estimated_in: Optional[datetime] = None
     actual_in: Optional[datetime] = None
     foresight_predictions_available: Optional[bool] = None
+    flight_name: Optional[str]=None
+    buffer_1:Optional[str]=None
+    buffer_2:Optional[str]=None

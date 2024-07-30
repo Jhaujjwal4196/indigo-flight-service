@@ -1,0 +1,16 @@
+.body {
+  margin-bottom: 15px;
+  padding: 15px 20px 10px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 1px 0 2px 0 rgba(201, 201, 201, 0.5);
+}
+
+.h2 {
+  margin: 0 0 10px;
+}
+
+.body p {
+  margin: 5px 0;
+}

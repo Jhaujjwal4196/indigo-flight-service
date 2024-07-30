@@ -1,17 +1,24 @@
 import React, { useState } from "react";
 import styles from "./styles.module.css";
+import { useRouter } from "next/router";
 
 function SearchBox() {
+  const router = useRouter();
   const [formVal, setFormval] = useState({
     departure: "",
     arrival: "",
     date: "",
-    pnr: "",
+    id: "",
     flight_id: "",
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const filteredFormEntries = Object.entries(formVal).filter(
+      ([key, val]) => val !== null && val !== ""
+    );
+    const queryParams = new URLSearchParams(filteredFormEntries).toString();
+    router.push(`/search?${queryParams}`);
     console.log(formVal);
   };
 
@@ -25,7 +32,7 @@ function SearchBox() {
   const button_disabled =
     formVal.flight_id ||
     (formVal.arrival && formVal.departure && formVal.date) ||
-    formVal.pnr
+    formVal.id
       ? false
       : true;
 
@@ -83,9 +90,9 @@ function SearchBox() {
               </div>
               <div className={styles.form_element}>
                 <input
-                  value={formVal.pnr}
+                  value={formVal.id}
                   onChange={(e) => {
-                    handleChange(e, "pnr");
+                    handleChange(e, "id");
                   }}
                   placeholder="PNR"
                 />
